@@ -11,16 +11,17 @@ let table_character_repeats input =
   String.iter input ~f:process ;
   table
 
-let table_has_repeats table n = Hashtbl.exists table ~f:(fun x -> x = n)
-
-let increase_factor table value search =
-  value + if table_has_repeats table search then 1 else 0
+let increase_by table value search =
+  let found n = Hashtbl.exists table ~f:(fun x -> x = n) in
+  value + if found search then 1 else 0
 
 let multipliers =
+  let reducer acc table =
+    let f = increase_by table in
+    (f (fst acc) 2, f (snd acc) 3)
+  in
   In_channel.read_lines "input.txt"
   |> List.map ~f:table_character_repeats
-  |> List.fold ~init:(0, 0) ~f:(fun acc table ->
-         (increase_factor table (fst acc) 2, increase_factor table (snd acc) 3)
-     )
+  |> List.fold ~init:(0, 0) ~f:reducer
 
 let () = print_endline (Int.to_string (fst multipliers * snd multipliers))
