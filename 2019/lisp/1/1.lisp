@@ -6,3 +6,13 @@
     (loop for line = (read-line stream nil 'eof)
           until (eq line 'eof)
           summing (fuel (parse-integer line)))))
+
+(defun part-two ()
+  (with-open-file (stream "./input.txt")
+    (loop for line = (read-line stream nil 'eof)
+          until (eq line 'eof)
+          summing (loop with current-fuel = (parse-integer line)
+                        for candidate = (fuel current-fuel)
+                        while (> candidate 0)
+                        do (setf current-fuel candidate)
+                        summing candidate))))
